@@ -1,0 +1,50 @@
+# 📦 DIGIY FRET — Module Client  
+Transport de marchandises & taxi-bagages • Prix juste • Chauffeur présent
+
+DIGIY FRET est le module **client** du système DIGIY DRIVER dédié au **transport de marchandises** :
+- enveloppes
+- colis
+- bagages
+- marchandises volumineuses
+
+🎯 Objectif :  
+**Garantir une réponse chauffeur rapide** avec des **prix dignes**, au-dessus du dumping, adaptés au terrain sénégalais.
+
+---
+
+## 🚀 Fonctionnalités clés
+
+- 📦 Choix du **type de chargement**
+  - ENVELOPE
+  - COLIS
+  - BAGAGE
+  - GROS VOLUME
+- 🧮 **Calcul automatique du prix** côté serveur (RPC Supabase)
+- 🔒 **Plancher garanti** (anti-exploitation)
+- ⚙️ Options FRET :
+  - Manutention (aide au chargement)
+  - Étages
+  - Marchandise fragile
+- 🌍 Fonctionne **dans tout le Sénégal**
+  - règles par ville
+  - fallback national `DEFAULT_SN`
+- 🚚 Création directe de la course FRET (`service_type = 'FRET'`)
+- 💳 0% commission DIGIY (paiement direct chauffeur)
+
+---
+
+## 🧠 Philosophie DIGIY
+
+> **Prix trop bas = pas de chauffeurs = clients abandonnés**
+
+DIGIY FRET adopte une stratégie claire :
+- prix **plus élevés mais justes**
+- chauffeurs **motivés**
+- clients **servis immédiatement**
+
+👉 Ce module privilégie la **disponibilité** et la **dignité du travail**, pas la course au prix le plus bas.
+
+---
+
+## 🗂️ Fichiers
+
