@@ -73,9 +73,9 @@
     </div>
 
     <div class="price" id="price">—</div>
-    <button class="action accept" onclick="estimateLocal()">🧮 Estimer (démo locale)</button>
+    <button class="action accept" onclick="estimateLocal()">🧮 Estimer</button>
 
-    <div class="note">Pour brancher Supabase : on ajoute RPC + création de demande.</div>
+    <div class="note">Démo locale (sans Supabase). Supabase arrive après.</div>
   </section>
 
   <!-- ✅ VUE CHAUFFEUR -->
@@ -90,13 +90,13 @@
     </div>
 
     <div class="actions">
-      <button class="action accept">✅ ACCEPTER</button>
-      <button class="action secondary">🕒 PROPOSER HEURE</button>
-      <button class="action secondary">📅 PROPOSER DEMAIN</button>
-      <button class="action secondary">💰 PROPOSER PRIX</button>
+      <button class="action accept" onclick="alert('✅ Accepté (démo)')">✅ ACCEPTER</button>
+      <button class="action secondary" onclick="alert('🕒 Proposer heure (démo)')">🕒 PROPOSER HEURE</button>
+      <button class="action secondary" onclick="alert('📅 Proposer demain (démo)')">📅 PROPOSER DEMAIN</button>
+      <button class="action secondary" onclick="alert('💰 Proposer prix (démo)')">💰 PROPOSER PRIX</button>
     </div>
 
-    <div class="note">Ensuite on branche Supabase : accept / propose.</div>
+    <div class="note">Démo locale (sans Supabase). Supabase arrive après.</div>
   </section>
 
 </main>
@@ -121,7 +121,6 @@ function showView(which){
   }
 }
 
-// Démo locale (juste pour que tu voies l'UX). Supabase arrive juste après.
 function estimateLocal(){
   const km = parseFloat(document.getElementById("distance").value || "0");
   const min = parseInt(document.getElementById("duration").value || "0", 10);
@@ -134,58 +133,16 @@ function estimateLocal(){
   const base = 1500;
   const perKm = 320;
   const perMin = 60;
+
   let price = (base + km*perKm + min*perMin + urgAdd) * volMult;
 
-  // plancher
-  const floor = (vol === "XL") ? 6000 : (vol === "L") ? 4500 : (vol === "M") ? 3500 : 3000;
-  price = Math.max(Math.round(price), floor);
-
-  document.getElementById("price").innerText = price + " F CFA";
-}
-</script>
-  <script>
-function showView(which){
-  const vc = document.getElementById("viewClient");
-  const vd = document.getElementById("viewDriver");
-  const tc = document.getElementById("tabClient");
-  const td = document.getElementById("tabDriver");
-
-  if(which === "client"){
-    vc.classList.remove("hidden");
-    vd.classList.add("hidden");
-    tc.classList.add("active");
-    td.classList.remove("active");
-  }else{
-    vd.classList.remove("hidden");
-    vc.classList.add("hidden");
-    td.classList.add("active");
-    tc.classList.remove("active");
-  }
-}
-
-// Démo locale (juste pour que tu voies l'UX). Supabase arrive juste après.
-function estimateLocal(){
-  const km = parseFloat(document.getElementById("distance").value || "0");
-  const min = parseInt(document.getElementById("duration").value || "0", 10);
-  const vol = document.getElementById("volume").value;
-  const urg = document.getElementById("urgency").value;
-
-  const volMult = {S:1.0, M:1.15, L:1.3, XL:1.55}[vol] || 1.15;
-  const urgAdd  = {URGENT:800, "24H":0, "48H":-200}[urg] ?? 0;
-
-  const base = 1500;
-  const perKm = 320;
-  const perMin = 60;
-  let price = (base + km*perKm + min*perMin + urgAdd) * volMult;
-
-  // plancher
   const floor = (vol === "XL") ? 6000 : (vol === "L") ? 4500 : (vol === "M") ? 3500 : 3000;
   price = Math.max(Math.round(price), floor);
 
   document.getElementById("price").innerText = price + " F CFA";
 }
 
-// ✅ Ouvre automatiquement Client ou Chauffeur selon l'URL
+// ✅ Auto-view: index.html?view=client ou index.html?view=driver
 const view = new URLSearchParams(location.search).get("view");
 if(view === "driver") showView("driver");
 if(view === "client") showView("client");
@@ -193,3 +150,4 @@ if(view === "client") showView("client");
 
 </body>
 </html>
+
