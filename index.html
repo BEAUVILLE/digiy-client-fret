@@ -7,25 +7,90 @@
   <meta name="theme-color" content="#16a34a" />
   <meta name="description" content="DIGIY FRET — Colis, bagages, marchandises. Client + Chauffeur." />
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
-    body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:#f7fbf8;color:#0f172a}
-    header{background:#16a34a;color:#fff;padding:18px;text-align:center;font-weight:900;font-size:18px}
-    main{max-width:860px;margin:auto;padding:16px}
-    .card{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 10px 22px rgba(2,6,23,.08)}
+    :root{
+      --bg:#f7fbf8;
+      --card:#fff;
+      --text:#0f172a;
+      --muted:#475569;
+      --line:rgba(15,23,42,.14);
+      --green:#16a34a;
+      --deep:#0b3d2e;
+      --soft:#e5e7eb;
+      --shadow:0 10px 22px rgba(2,6,23,.08);
+      --r:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{
+      background:linear-gradient(135deg,var(--green),#22c55e);
+      color:#fff;padding:18px;text-align:center;font-weight:950;font-size:18px;
+      position:sticky;top:0;z-index:10;
+      box-shadow:0 10px 18px rgba(2,6,23,.10);
+    }
+    main{max-width:980px;margin:auto;padding:16px}
+    .card{background:var(--card);border-radius:var(--r);padding:16px;margin-bottom:14px;box-shadow:var(--shadow);border:1px solid rgba(2,6,23,.06)}
     .tabs{display:flex;gap:10px;margin-bottom:14px}
-    .tab{flex:1;padding:12px;border:none;border-radius:14px;font-weight:900;cursor:pointer;background:#e5e7eb}
-    .tab.active{background:#0b3d2e;color:#fff}
-    label{font-size:12px;font-weight:800;color:#475569;display:block;margin-bottom:6px}
-    input,select{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(15,23,42,.15);font-size:15px;margin-bottom:14px}
+    .tab{flex:1;padding:12px;border:none;border-radius:14px;font-weight:950;cursor:pointer;background:var(--soft)}
+    .tab.active{background:var(--deep);color:#fff}
+    label{font-size:12px;font-weight:900;color:var(--muted);display:block;margin-bottom:6px}
+    input,select,textarea{
+      width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);
+      font-size:15px;margin-bottom:14px;background:#fff;outline:none;font-weight:750
+    }
+    textarea{min-height:46px;resize:vertical}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    @media(max-width:640px){.grid{grid-template-columns:1fr}}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-    button.action{padding:14px;border:none;border-radius:14px;font-weight:900;cursor:pointer}
-    .accept{background:#16a34a;color:#fff}
-    .secondary{background:#e5e7eb}
-    .price{font-size:26px;font-weight:950;color:#065f46;text-align:center;margin:10px 0}
-    .note{font-size:13px;color:#475569;text-align:center;margin-top:10px}
+    @media(max-width:720px){.grid{grid-template-columns:1fr}}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .btn{
+      padding:12px 14px;border:none;border-radius:14px;font-weight:950;cursor:pointer;
+      box-shadow:0 10px 16px rgba(2,6,23,.06);
+    }
+    .btn.primary{background:var(--green);color:#fff}
+    .btn.secondary{background:var(--soft);color:#0f172a}
+    .btn.danger{background:#fee2e2;color:#991b1b}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+    .price{font-size:26px;font-weight:1000;color:#065f46;text-align:center;margin:10px 0}
+    .note{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;font-weight:750}
     .hidden{display:none}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:9px 12px;border-radius:999px;border:1px solid var(--line);
+      background:#fff;font-weight:950
+    }
+    .dot{width:10px;height:10px;border-radius:50%}
+    .ok{background:#16a34a}
+    .warn{background:#f59e0b}
+    .bad{background:#dc2626}
+    .kbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:space-between;align-items:center}
+    .log{
+      margin-top:10px;padding:10px 12px;border-radius:14px;
+      border:1px dashed rgba(15,23,42,.25);
+      background:rgba(248,250,252,.85);
+      color:var(--muted);
+      font-size:13px;font-weight:800
+    }
+    .list{margin-top:10px}
+    .job{
+      border:1px solid rgba(15,23,42,.12);
+      border-radius:16px;padding:12px;margin-bottom:10px;background:#fff;
+    }
+    .job h4{margin:0 0 8px 0;font-size:14px}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      display:inline-flex;align-items:center;gap:6px;
+      padding:7px 10px;border-radius:999px;background:#f1f5f9;
+      font-weight:950;font-size:12px;border:1px solid rgba(15,23,42,.10)
+    }
+    .job .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    .mini{padding:10px 12px;border:none;border-radius:12px;font-weight:950;cursor:pointer}
+    .mini.primary{background:rgba(22,163,74,.12);color:#065f46;border:1px solid rgba(22,163,74,.25)}
+    .mini.gold{background:rgba(245,158,11,.12);color:#92400e;border:1px solid rgba(245,158,11,.25)}
+    .mini.bad{background:rgba(220,38,38,.10);color:#991b1b;border:1px solid rgba(220,38,38,.25)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px}
+    .sep{height:1px;background:rgba(15,23,42,.08);margin:12px 0}
   </style>
 </head>
 
@@ -34,17 +99,44 @@
 
 <main>
 
+  <div class="card">
+    <div class="kbar">
+      <div class="row">
+        <span class="pill"><span class="dot" id="dotConn"></span><span id="connTxt">…</span></span>
+        <span class="pill"><span class="dot warn" id="dotMode"></span><span id="modeTxt">…</span></span>
+      </div>
+      <div class="row">
+        <button class="btn secondary" id="btnRefresh">↻ Actualiser</button>
+        <button class="btn secondary" id="btnGoLogin">🔐 Login</button>
+        <button class="btn danger" id="btnLogout">Déco</button>
+      </div>
+    </div>
+    <div class="log" id="log">Prêt. 🚀</div>
+  </div>
+
   <div class="tabs">
-    <button class="tab active" id="tabClient" onclick="showView('client')">👤 Client</button>
-    <button class="tab" id="tabDriver" onclick="showView('driver')">🚚 Chauffeur</button>
+    <button class="tab active" id="tabClient">👤 Client</button>
+    <button class="tab" id="tabDriver">🚚 Chauffeur</button>
   </div>
 
   <!-- ✅ VUE CLIENT -->
   <section id="viewClient" class="card">
     <h3 style="margin:0 0 10px 0;">👤 Client — Demande FRET</h3>
 
-    <label>Ville</label>
-    <input id="city" placeholder="Dakar, Saly…" value="Dakar" />
+    <div class="grid">
+      <div>
+        <label>Ville</label>
+        <input id="city" placeholder="Dakar, Saly…" value="Dakar" />
+      </div>
+      <div>
+        <label>Urgence</label>
+        <select id="urgency">
+          <option value="URGENT">⚡ URGENT</option>
+          <option value="24H" selected>🕒 24H</option>
+          <option value="48H">🕒 48H</option>
+        </select>
+      </div>
+    </div>
 
     <label>Volume (estimation)</label>
     <select id="volume">
@@ -54,12 +146,19 @@
       <option value="XL">XL — Très grand</option>
     </select>
 
-    <label>Urgence</label>
-    <select id="urgency">
-      <option value="URGENT">⚡ URGENT</option>
-      <option value="24H" selected>🕒 24H</option>
-      <option value="48H">🕒 48H</option>
-    </select>
+    <div class="grid">
+      <div>
+        <label>Départ</label>
+        <input id="pickup" placeholder="Ex: Point E" />
+      </div>
+      <div>
+        <label>Arrivée</label>
+        <input id="dropoff" placeholder="Ex: Pikine" />
+      </div>
+    </div>
+
+    <label>Contenu (simple)</label>
+    <input id="cargo" placeholder="Ex: cartons boutique, valise, boissons…" />
 
     <div class="grid">
       <div>
@@ -73,40 +172,89 @@
     </div>
 
     <div class="price" id="price">—</div>
-    <button class="action accept" onclick="estimateLocal()">🧮 Estimer</button>
 
-    <div class="note">Démo locale (sans Supabase). Supabase arrive après.</div>
+    <div class="row">
+      <button class="btn secondary" id="btnEstimate">🧮 Estimer</button>
+      <button class="btn primary" id="btnCreateJob">📩 Envoyer la demande</button>
+    </div>
+
+    <div class="sep"></div>
+
+    <h3 style="margin:0 0 6px 0;">📜 Mes demandes</h3>
+    <div class="list" id="clientList"></div>
+    <div class="note" id="clientEmpty" style="display:none;">Aucune demande pour l’instant. Fais une demande et on lance le FRET. 🔥</div>
   </section>
 
   <!-- ✅ VUE CHAUFFEUR -->
   <section id="viewDriver" class="card hidden">
-    <h3 style="margin:0 0 10px 0;">🚚 Chauffeur — Proposition</h3>
+    <h3 style="margin:0 0 10px 0;">🚚 Chauffeur — Missions</h3>
 
-    <div class="card" style="margin:0 0 12px 0;">
-      <strong>📍 Dakar → Plateau</strong><br>
-      📦 Volume : L<br>
-      ⏱️ Urgence : 24H<br>
-      💰 Prix base : 4 500 F CFA
+    <div class="row" style="justify-content:space-between">
+      <div class="pill"><span class="dot" id="dotDispo"></span><span id="dispoTxt">DISPO ✅</span></div>
+      <button class="btn primary" id="btnToggleDispo">⚡ Dispo</button>
     </div>
 
-    <div class="actions">
-      <button class="action accept" onclick="alert('✅ Accepté (démo)')">✅ ACCEPTER</button>
-      <button class="action secondary" onclick="alert('🕒 Proposer heure (démo)')">🕒 PROPOSER HEURE</button>
-      <button class="action secondary" onclick="alert('📅 Proposer demain (démo)')">📅 PROPOSER DEMAIN</button>
-      <button class="action secondary" onclick="alert('💰 Proposer prix (démo)')">💰 PROPOSER PRIX</button>
-    </div>
+    <div class="sep"></div>
 
-    <div class="note">Démo locale (sans Supabase). Supabase arrive après.</div>
+    <div class="list" id="driverList"></div>
+    <div class="note" id="driverEmpty" style="display:none;">Aucune mission dispo. Reste en veille, ça tombe. 🦅</div>
   </section>
 
 </main>
 
 <script>
+/* =========================
+   🔐 SUPABASE (SB UNIQUE)
+========================= */
+const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
+
+window.__supabase ||= window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.__supabase;
+
+/* =========================
+   ROUTES
+========================= */
+const ROUTES = {
+  LOGIN: "./login.html" // tu peux ajouter ?next=... si tu veux
+};
+
+/* =========================
+   UI HELPERS
+========================= */
+const $ = (id)=>document.getElementById(id);
+
+function setDot(id, state){ // ok | warn | bad
+  const el = $(id);
+  el.classList.remove("ok","warn","bad");
+  el.classList.add(state);
+}
+function log(msg){ $("log").textContent = msg; }
+
+function fmtMoney(x){ return Number(x||0).toLocaleString("fr-FR") + " F CFA"; }
+function fmtDate(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+  }catch(e){ return "—"; }
+}
+function normalizePhoneDisplay(phone){
+  if(!phone) return "—";
+  let p = String(phone).trim().replace(/[^\d+]/g,"");
+  if (/^\d{11,15}$/.test(p) && !p.startsWith("+")) p = "+" + p;
+  if (/^0\d{8,}$/.test(p)) p = "+221" + p.replace(/^0+/, "");
+  return p;
+}
+
+/* =========================
+   TABS
+========================= */
 function showView(which){
-  const vc = document.getElementById("viewClient");
-  const vd = document.getElementById("viewDriver");
-  const tc = document.getElementById("tabClient");
-  const td = document.getElementById("tabDriver");
+  const vc = $("viewClient");
+  const vd = $("viewDriver");
+  const tc = $("tabClient");
+  const td = $("tabDriver");
 
   if(which === "client"){
     vc.classList.remove("hidden");
@@ -121,11 +269,14 @@ function showView(which){
   }
 }
 
+/* =========================
+   PRICING (LOCAL ESTIMATE)
+========================= */
 function estimateLocal(){
-  const km = parseFloat(document.getElementById("distance").value || "0");
-  const min = parseInt(document.getElementById("duration").value || "0", 10);
-  const vol = document.getElementById("volume").value;
-  const urg = document.getElementById("urgency").value;
+  const km = parseFloat($("distance").value || "0");
+  const min = parseInt($("duration").value || "0", 10);
+  const vol = $("volume").value;
+  const urg = $("urgency").value;
 
   const volMult = {S:1.0, M:1.15, L:1.3, XL:1.55}[vol] || 1.15;
   const urgAdd  = {URGENT:800, "24H":0, "48H":-200}[urg] ?? 0;
@@ -139,15 +290,378 @@ function estimateLocal(){
   const floor = (vol === "XL") ? 6000 : (vol === "L") ? 4500 : (vol === "M") ? 3500 : 3000;
   price = Math.max(Math.round(price), floor);
 
-  document.getElementById("price").innerText = price + " F CFA";
+  $("price").innerText = fmtMoney(price);
+  return price;
 }
 
-// ✅ Auto-view: index.html?view=client ou index.html?view=driver
-const view = new URLSearchParams(location.search).get("view");
-if(view === "driver") showView("driver");
-if(view === "client") showView("client");
+/* =========================
+   STATE
+========================= */
+let currentUser = null;
+let userPhone = "—";
+let modeDemo = false;    // tables absentes => true
+let dispo = true;
+
+/* =========================
+   DB CHECK
+========================= */
+async function tableExists(){
+  try{
+    const { error } = await sb.from("fret_jobs").select("id").limit(1);
+    if(error) return false;
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+/* =========================
+   RENDER CARDS
+========================= */
+function statusLabel(s){
+  const v = String(s||"pending").toLowerCase();
+  if(v==="pending") return ["EN ATTENTE","warn"];
+  if(v==="accepted") return ["ACCEPTÉE","warn"];
+  if(v==="in_progress") return ["EN COURS","warn"];
+  if(v==="done") return ["LIVRÉE","ok"];
+  if(v==="cancelled") return ["ANNULÉE","bad"];
+  return [String(s||"—").toUpperCase(),"warn"];
+}
+
+function jobCardClient(j){
+  const [st,stc] = statusLabel(j.status);
+  const id = j.id || "—";
+  return `
+    <div class="job" data-id="${id}">
+      <h4>📦 Demande ${id}</h4>
+      <div class="chips">
+        <span class="chip">🧾 ${st}</span>
+        <span class="chip">🕒 ${fmtDate(j.created_at)}</span>
+        <span class="chip">📍 ${j.pickup || "—"} → ${j.dropoff || "—"}</span>
+        <span class="chip">📦 ${j.cargo || "—"}</span>
+        <span class="chip">Vol ${j.volume || "—"}</span>
+        <span class="chip">⚡ ${j.urgency || "—"}</span>
+        <span class="chip">💰 ${fmtMoney(j.price_xof)}</span>
+      </div>
+      <div class="actions">
+        ${(String(j.status).toLowerCase()==="pending") ? `<button class="mini bad" data-act="cancel">✖ Annuler</button>` : ``}
+      </div>
+      <div class="note" style="text-align:left;margin:10px 0 0 0;">
+        Chauffeur: <span class="mono">${j.driver_phone || "—"}</span>
+      </div>
+    </div>
+  `;
+}
+
+function jobCardDriver(j){
+  const [st,stc] = statusLabel(j.status);
+  const id = j.id || "—";
+  return `
+    <div class="job" data-id="${id}">
+      <h4>🚚 Mission ${id}</h4>
+      <div class="chips">
+        <span class="chip">🧾 ${st}</span>
+        <span class="chip">🕒 ${fmtDate(j.created_at)}</span>
+        <span class="chip">🏙️ ${j.city || "—"}</span>
+        <span class="chip">📍 ${j.pickup || "—"} → ${j.dropoff || "—"}</span>
+        <span class="chip">📦 ${j.cargo || "—"}</span>
+        <span class="chip">Vol ${j.volume || "—"}</span>
+        <span class="chip">⚡ ${j.urgency || "—"}</span>
+        <span class="chip">💰 ${fmtMoney(j.price_xof)}</span>
+      </div>
+
+      <div class="actions">
+        ${(String(j.status).toLowerCase()==="pending") ? `<button class="mini primary" data-act="accept">✅ Accepter</button>` : ``}
+        ${(String(j.status).toLowerCase()==="accepted" && (j.driver_phone === userPhone || !j.driver_phone)) ? `<button class="mini gold" data-act="start">🚦 Démarrer</button>` : ``}
+        ${(String(j.status).toLowerCase()==="in_progress" && (j.driver_phone === userPhone || !j.driver_phone)) ? `<button class="mini primary" data-act="done">📦 Livré</button>` : ``}
+        <button class="mini bad" data-act="signal">✖ Signaler</button>
+      </div>
+
+      <div class="note" style="text-align:left;margin:10px 0 0 0;">
+        Client: <span class="mono">${j.client_phone || "—"}</span> • Driver: <span class="mono">${j.driver_phone || "—"}</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderList(el, emptyEl, list, renderer){
+  el.innerHTML = "";
+  emptyEl.style.display = list.length ? "none" : "block";
+  list.forEach(j=> el.insertAdjacentHTML("beforeend", renderer(j)));
+}
+
+/* =========================
+   LOAD DATA
+========================= */
+function demoJobsForClient(){
+  return [
+    { id:"FRET-DEMO-1", status:"pending", created_at:new Date().toISOString(), city:"Dakar", pickup:"Point E", dropoff:"Pikine", cargo:"Cartons", volume:"M", urgency:"24H", price_xof:4500, driver_phone:null, client_phone:userPhone },
+  ];
+}
+function demoJobsForDriver(){
+  return [
+    { id:"FRET-DEMO-2", status:"pending", created_at:new Date().toISOString(), city:"Dakar", pickup:"Plateau", dropoff:"Pikine", cargo:"Boissons", volume:"L", urgency:"24H", price_xof:6500, client_phone:"+221770000000", driver_phone:null },
+  ];
+}
+
+async function loadClientJobs(){
+  if(modeDemo){
+    renderList($("clientList"), $("clientEmpty"), demoJobsForClient(), jobCardClient);
+    return;
+  }
+  try{
+    const uid = currentUser?.id;
+    const phone = userPhone;
+
+    const { data, error } = await sb
+      .from("fret_jobs")
+      .select("*")
+      .or(`client_id.eq.${uid},client_phone.eq.${phone}`)
+      .order("created_at", { ascending:false })
+      .limit(50);
+
+    if(error) throw error;
+    renderList($("clientList"), $("clientEmpty"), (data||[]), jobCardClient);
+  }catch(e){
+    renderList($("clientList"), $("clientEmpty"), demoJobsForClient(), jobCardClient);
+    log("Client: fallback démo (check RLS) ✅");
+  }
+}
+
+async function loadDriverJobs(){
+  if(modeDemo){
+    renderList($("driverList"), $("driverEmpty"), demoJobsForDriver(), jobCardDriver);
+    return;
+  }
+  try{
+    const uid = currentUser?.id;
+    const phone = userPhone;
+
+    // Chauffeur voit:
+    // - missions pending (dispo au marché)
+    // - ses missions (driver_id/driver_phone)
+    const { data, error } = await sb
+      .from("fret_jobs")
+      .select("*")
+      .or(`status.eq.pending,driver_id.eq.${uid},driver_phone.eq.${phone}`)
+      .order("created_at", { ascending:false })
+      .limit(80);
+
+    if(error) throw error;
+    renderList($("driverList"), $("driverEmpty"), (data||[]), jobCardDriver);
+  }catch(e){
+    renderList($("driverList"), $("driverEmpty"), demoJobsForDriver(), jobCardDriver);
+    log("Chauffeur: fallback démo (check RLS) ✅");
+  }
+}
+
+async function refreshAll(){
+  log("Chargement…");
+  await loadClientJobs();
+  await loadDriverJobs();
+  log("OK ✅");
+}
+
+/* =========================
+   ACTIONS (CLIENT / DRIVER)
+========================= */
+function makeJobId(){
+  // ID simple: FRET-YYYYMMDD-HHMMSS-XXXX
+  const d = new Date();
+  const pad = (n)=>String(n).padStart(2,"0");
+  const stamp = `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}${pad(d.getSeconds())}`;
+  const rnd = Math.random().toString(16).slice(2,6).toUpperCase();
+  return `FRET-${stamp}-${rnd}`;
+}
+
+async function createJob(){
+  const price = estimateLocal();
+
+  const payload = {
+    id: makeJobId(),
+    status: "pending",
+    city: ($("city").value||"").trim() || null,
+    pickup: ($("pickup").value||"").trim() || null,
+    dropoff: ($("dropoff").value||"").trim() || null,
+    cargo: ($("cargo").value||"").trim() || null,
+    volume: $("volume").value || null,
+    urgency: $("urgency").value || null,
+    distance_km: Number($("distance").value||0) || null,
+    duration_min: Number($("duration").value||0) || null,
+    price_xof: Number(price||0) || null,
+    client_id: currentUser?.id || null,
+    client_phone: userPhone !== "—" ? userPhone : null
+  };
+
+  if(modeDemo){
+    log("Mode démo : demande simulée ✅");
+    return;
+  }
+
+  try{
+    $("btnCreateJob").disabled = true;
+    $("btnCreateJob").textContent = "Envoi…";
+
+    const { error } = await sb.from("fret_jobs").insert(payload);
+    if(error) throw error;
+
+    log("Demande envoyée ✅");
+    await loadClientJobs();
+  }catch(e){
+    log("Impossible de créer (RLS/colonnes). Vérifie policies/colonnes. ❗");
+  }finally{
+    $("btnCreateJob").disabled = false;
+    $("btnCreateJob").textContent = "📩 Envoyer la demande";
+  }
+}
+
+async function updateJob(jobId, patch){
+  if(modeDemo){
+    log("Mode démo : action simulée ✅");
+    return;
+  }
+  try{
+    const { error } = await sb.from("fret_jobs").update(patch).eq("id", jobId);
+    if(error) throw error;
+    await refreshAll();
+  }catch(e){
+    log("Update refusé (RLS) ou colonnes manquantes ❗");
+  }
+}
+
+async function acceptJob(jobId){
+  const patch = {
+    status: "accepted",
+    driver_id: currentUser?.id || null,
+    driver_phone: userPhone !== "—" ? userPhone : null
+  };
+  log("Acceptation…");
+  await updateJob(jobId, patch);
+  log("Mission acceptée ✅");
+}
+
+async function startJob(jobId){
+  log("Démarrage…");
+  await updateJob(jobId, { status:"in_progress" });
+  log("Mission démarrée ✅");
+}
+
+async function doneJob(jobId){
+  log("Livraison…");
+  await updateJob(jobId, { status:"done" });
+  log("Livré ✅");
+}
+
+async function cancelJob(jobId){
+  log("Annulation…");
+  await updateJob(jobId, { status:"cancelled" });
+  log("Annulé ✅");
+}
+
+/* =========================
+   AUTH / MODE
+========================= */
+async function init(){
+  // Tabs via URL: ?view=client | ?view=driver
+  const view = new URLSearchParams(location.search).get("view");
+  if(view === "driver") showView("driver");
+  if(view === "client") showView("client");
+
+  $("tabClient").addEventListener("click", ()=>showView("client"));
+  $("tabDriver").addEventListener("click", ()=>showView("driver"));
+
+  $("btnEstimate").addEventListener("click", estimateLocal);
+  $("btnCreateJob").addEventListener("click", createJob);
+  $("btnRefresh").addEventListener("click", refreshAll);
+
+  $("btnGoLogin").addEventListener("click", ()=> location.href = ROUTES.LOGIN);
+
+  $("btnLogout").addEventListener("click", async ()=>{
+    try{ await sb.auth.signOut(); }catch(e){}
+    location.href = ROUTES.LOGIN;
+  });
+
+  // Estimation initiale
+  estimateLocal();
+
+  // Mode: tables ?
+  modeDemo = !(await tableExists());
+  setDot("dotMode", modeDemo ? "warn" : "ok");
+  $("modeTxt").textContent = modeDemo ? "MODE DÉMO (tables absentes)" : "MODE LIVE (Supabase)";
+
+  // Session
+  const { data } = await sb.auth.getSession();
+  const session = data?.session;
+
+  if(!session){
+    currentUser = null;
+    userPhone = "—";
+    setDot("dotConn", "warn");
+    $("connTxt").textContent = "Non connecté";
+    log("Non connecté : clique 🔐 Login (ou garde le mode démo).");
+    await refreshAll();
+    return;
+  }
+
+  currentUser = session.user;
+  userPhone = normalizePhoneDisplay(currentUser.phone || currentUser.user_metadata?.phone);
+  setDot("dotConn", "ok");
+  $("connTxt").textContent = "Connecté — " + userPhone;
+
+  // Dispo driver UI
+  setDot("dotDispo", dispo ? "ok" : "warn");
+  $("dispoTxt").textContent = dispo ? "DISPO ✅" : "PAUSE ⏸️";
+  $("btnToggleDispo").textContent = dispo ? "⚡ Dispo" : "⏸️ Pause";
+
+  $("btnToggleDispo").addEventListener("click", async ()=>{
+    dispo = !dispo;
+    setDot("dotDispo", dispo ? "ok" : "warn");
+    $("dispoTxt").textContent = dispo ? "DISPO ✅" : "PAUSE ⏸️";
+    $("btnToggleDispo").textContent = dispo ? "⚡ Dispo" : "⏸️ Pause";
+    log(dispo ? "Chauffeur: dispo ✅" : "Chauffeur: pause ⏸️");
+  });
+
+  await refreshAll();
+}
+
+/* =========================
+   CLICK HANDLERS LISTS
+========================= */
+$("clientList").addEventListener("click", async (e)=>{
+  const btn = e.target.closest("button");
+  if(!btn) return;
+  const card = e.target.closest(".job");
+  const jobId = card?.dataset?.id;
+  const act = btn.dataset.act;
+  if(!jobId || !act) return;
+
+  if(act==="cancel"){
+    if(confirm("Annuler cette demande ?")) await cancelJob(jobId);
+  }
+});
+
+$("driverList").addEventListener("click", async (e)=>{
+  const btn = e.target.closest("button");
+  if(!btn) return;
+  const card = e.target.closest(".job");
+  const jobId = card?.dataset?.id;
+  const act = btn.dataset.act;
+  if(!jobId || !act) return;
+
+  if(act==="accept") return acceptJob(jobId);
+  if(act==="start") return startJob(jobId);
+  if(act==="done") return doneJob(jobId);
+  if(act==="signal"){
+    prompt("Signalement (vite fait) :");
+    log("Signalement noté ✅");
+  }
+});
+
+/* START */
+init();
 </script>
 
 </body>
 </html>
+
 
