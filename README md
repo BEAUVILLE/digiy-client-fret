@@ -1,50 +1,27 @@
-# 📦 DIGIY FRET — Module Client  
-Transport de marchandises & taxi-bagages • Prix juste • Chauffeur présent
+# 📦 DIGIY FRET — Module Client (Taxi-bagages / Marchandises)
 
-DIGIY FRET est le module **client** du système DIGIY DRIVER dédié au **transport de marchandises** :
-- enveloppes
-- colis
-- bagages
-- marchandises volumineuses
+Interface client pour commander un transport de marchandises :
+ENVELOPE • COLIS • BAGAGE • GROS VOLUME
 
-🎯 Objectif :  
-**Garantir une réponse chauffeur rapide** avec des **prix dignes**, au-dessus du dumping, adaptés au terrain sénégalais.
+## 🚀 Démarrage rapide
+1. Ouvre `client-fret.html` dans ton navigateur
+2. Clique **Estimer le prix**
+3. Renseigne téléphone + zones
+4. Clique **Commander FRET**
 
----
+✅ Une course est créée dans `driver_trips` avec `service_type = 'FRET'`.
 
-## 🚀 Fonctionnalités clés
+## 🧮 Pricing (anti-dumping)
+- Prix calculé côté serveur via RPC `estimate_fret_price`
+- Plancher garanti (chauffeur protégé)
+- Options : manutention, étages, fragile
 
-- 📦 Choix du **type de chargement**
-  - ENVELOPE
-  - COLIS
-  - BAGAGE
-  - GROS VOLUME
-- 🧮 **Calcul automatique du prix** côté serveur (RPC Supabase)
-- 🔒 **Plancher garanti** (anti-exploitation)
-- ⚙️ Options FRET :
-  - Manutention (aide au chargement)
-  - Étages
-  - Marchandise fragile
-- 🌍 Fonctionne **dans tout le Sénégal**
-  - règles par ville
-  - fallback national `DEFAULT_SN`
-- 🚚 Création directe de la course FRET (`service_type = 'FRET'`)
-- 💳 0% commission DIGIY (paiement direct chauffeur)
+## 🔧 Dépendances
+- Supabase (RPC)
+- Fonctions requises :
+  - `estimate_fret_price(...)`
+  - `create_trip(...)`
 
----
-
-## 🧠 Philosophie DIGIY
-
-> **Prix trop bas = pas de chauffeurs = clients abandonnés**
-
-DIGIY FRET adopte une stratégie claire :
-- prix **plus élevés mais justes**
-- chauffeurs **motivés**
-- clients **servis immédiatement**
-
-👉 Ce module privilégie la **disponibilité** et la **dignité du travail**, pas la course au prix le plus bas.
-
----
-
-## 🗂️ Fichiers
-
+## 📁 Fichiers
+- `client-fret.html` : module client FRET
+- `README.md` : documentation
