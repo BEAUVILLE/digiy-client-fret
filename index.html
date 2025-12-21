@@ -2,97 +2,63 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>DIGIY FRET — Transport de marchandises</title>
+  <title>DIGIY FRET — Client & Chauffeur</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#16a34a" />
-  <meta name="description" content="DIGIY FRET — Colis, bagages, marchandises. Prix juste, chauffeur présent." />
+  <meta name="description" content="DIGIY FRET — Colis, bagages, marchandises. Client + Chauffeur." />
 
-  <!-- CSS UNIQUEMENT ICI -->
   <style>
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,Arial,sans-serif;
-      background:#f7fbf8;
-      color:#0f172a;
-    }
-    header{
-      background:#16a34a;
-      color:#fff;
-      padding:18px;
-      text-align:center;
-      font-weight:900;
-      font-size:18px;
-    }
-    main{
-      max-width:760px;
-      margin:auto;
-      padding:16px;
-    }
-    .card{
-      background:#fff;
-      border-radius:18px;
-      padding:16px;
-      margin-bottom:14px;
-      box-shadow:0 10px 22px rgba(2,6,23,.08);
-    }
-    .actions{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-top:12px;
-    }
-    button{
-      padding:14px;
-      border:none;
-      border-radius:14px;
-      font-weight:900;
-      cursor:pointer;
-    }
+    body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:#f7fbf8;color:#0f172a}
+    header{background:#16a34a;color:#fff;padding:18px;text-align:center;font-weight:900;font-size:18px}
+    main{max-width:860px;margin:auto;padding:16px}
+    .card{background:#fff;border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 10px 22px rgba(2,6,23,.08)}
+    .tabs{display:flex;gap:10px;margin-bottom:14px}
+    .tab{flex:1;padding:12px;border:none;border-radius:14px;font-weight:900;cursor:pointer;background:#e5e7eb}
+    .tab.active{background:#0b3d2e;color:#fff}
+    label{font-size:12px;font-weight:800;color:#475569;display:block;margin-bottom:6px}
+    input,select{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(15,23,42,.15);font-size:15px;margin-bottom:14px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:640px){.grid{grid-template-columns:1fr}}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    button.action{padding:14px;border:none;border-radius:14px;font-weight:900;cursor:pointer}
     .accept{background:#16a34a;color:#fff}
     .secondary{background:#e5e7eb}
+    .price{font-size:26px;font-weight:950;color:#065f46;text-align:center;margin:10px 0}
+    .note{font-size:13px;color:#475569;text-align:center;margin-top:10px}
+    .hidden{display:none}
   </style>
 </head>
 
 <body>
-
-<header>📦 DIGIY FRET — Chauffeur</header>
-
-<main>
-
-  <div class="card">
-    <strong>📍 Dakar → Plateau</strong><br>
-    📦 Volume : L<br>
-    ⏱️ Urgence : 24H<br>
-    💰 Prix base : 4 500 F CFA
-  </div>
-
-  <!-- BOUTONS CHAUFFEUR (AU BON ENDROIT) -->
-  <div class="actions">
-    <button class="accept">✅ ACCEPTER</button>
-    <button class="secondary">🕒 PROPOSER HEURE</button>
-    <button class="secondary">📅 PROPOSER DEMAIN</button>
-    <button class="secondary">💰 PROPOSER PRIX</button>
-  </div>
-
-</main>
-
-</body>
-</html>
-   
-<header>📦 DIGIY FRET <span class="pill">Client</span></header>
+<header>📦 DIGIY FRET</header>
 
 <main>
 
-  <div class="card">
+  <div class="tabs">
+    <button class="tab active" id="tabClient" onclick="showView('client')">👤 Client</button>
+    <button class="tab" id="tabDriver" onclick="showView('driver')">🚚 Chauffeur</button>
+  </div>
+
+  <!-- ✅ VUE CLIENT -->
+  <section id="viewClient" class="card">
+    <h3 style="margin:0 0 10px 0;">👤 Client — Demande FRET</h3>
+
     <label>Ville</label>
-    <input id="city" placeholder="Dakar, Saly, Thiès…" value="Dakar" />
+    <input id="city" placeholder="Dakar, Saly…" value="Dakar" />
 
-    <label>Type de chargement</label>
-    <select id="tier">
-      <option value="ENVELOPE">📄 Enveloppe / petit paquet</option>
-      <option value="COLIS" selected>📦 Colis / carton</option>
-      <option value="BAGAGE">🧳 Bagages / plusieurs sacs</option>
-      <option value="GROS">🏗️ Gros volume / marchandises</option>
+    <label>Volume (estimation)</label>
+    <select id="volume">
+      <option value="S">S — Petit</option>
+      <option value="M" selected>M — Moyen</option>
+      <option value="L">L — Grand</option>
+      <option value="XL">XL — Très grand</option>
+    </select>
+
+    <label>Urgence</label>
+    <select id="urgency">
+      <option value="URGENT">⚡ URGENT</option>
+      <option value="24H" selected>🕒 24H</option>
+      <option value="48H">🕒 48H</option>
     </select>
 
     <div class="grid">
@@ -106,134 +72,76 @@
       </div>
     </div>
 
-    <div class="row">
-      <input type="checkbox" id="handling" />
-      <label for="handling" style="margin:0">Besoin d’aide (charger / décharger)</label>
-    </div>
-
-    <div class="grid">
-      <div>
-        <label>Étages (0–5)</label>
-        <input id="stairs" type="number" min="0" max="5" value="0" />
-      </div>
-      <div class="row" style="align-items:flex-end;margin:0">
-        <input type="checkbox" id="fragile" />
-        <label for="fragile" style="margin:0">Fragile</label>
-      </div>
-    </div>
-
     <div class="price" id="price">—</div>
+    <button class="action accept" onclick="estimateLocal()">🧮 Estimer (démo locale)</button>
 
-    <button class="btn secondary" onclick="estimate()">🧮 Estimer le prix</button>
-    <div class="note">Prix DIGIY garanti • Plancher inclus • Chauffeur rémunéré dignement</div>
-  </div>
+    <div class="note">Pour brancher Supabase : on ajoute RPC + création de demande.</div>
+  </section>
 
-  <div class="card">
-    <label>Téléphone client</label>
-    <input id="phone" placeholder="+2217XXXXXXX" />
+  <!-- ✅ VUE CHAUFFEUR -->
+  <section id="viewDriver" class="card hidden">
+    <h3 style="margin:0 0 10px 0;">🚚 Chauffeur — Proposition</h3>
 
-    <label>Zone de départ</label>
-    <input id="pickupZone" placeholder="Plateau, HLM, Saly Centre…" />
+    <div class="card" style="margin:0 0 12px 0;">
+      <strong>📍 Dakar → Plateau</strong><br>
+      📦 Volume : L<br>
+      ⏱️ Urgence : 24H<br>
+      💰 Prix base : 4 500 F CFA
+    </div>
 
-    <label>Zone d’arrivée</label>
-    <input id="dropoffZone" placeholder="Destination…" />
+    <div class="actions">
+      <button class="action accept">✅ ACCEPTER</button>
+      <button class="action secondary">🕒 PROPOSER HEURE</button>
+      <button class="action secondary">📅 PROPOSER DEMAIN</button>
+      <button class="action secondary">💰 PROPOSER PRIX</button>
+    </div>
 
-    <button class="btn" onclick="createTrip()">📦 Commander FRET</button>
-    <div class="note">Paiement direct au chauffeur • 0% commission DIGIY</div>
-  </div>
+    <div class="note">Ensuite on branche Supabase : accept / propose.</div>
+  </section>
 
 </main>
 
-<script type="module">
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+<script>
+function showView(which){
+  const vc = document.getElementById("viewClient");
+  const vd = document.getElementById("viewDriver");
+  const tc = document.getElementById("tabClient");
+  const td = document.getElementById("tabDriver");
 
-/* 🔐 SUPABASE — DÉJÀ POSÉ */
-    const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-let lastPrice = null;
-
-function getInputs(){
-  return {
-    city: document.getElementById("city").value.trim(),
-    tier: document.getElementById("tier").value,
-    distance: parseFloat(document.getElementById("distance").value || "0"),
-    duration: parseInt(document.getElementById("duration").value || "0", 10),
-    handling: document.getElementById("handling").checked,
-    stairs: parseInt(document.getElementById("stairs").value || "0", 10),
-    fragile: document.getElementById("fragile").checked,
-    phone: document.getElementById("phone").value.trim(),
-    pickupZone: document.getElementById("pickupZone").value.trim(),
-    dropoffZone: document.getElementById("dropoffZone").value.trim()
-  };
+  if(which === "client"){
+    vc.classList.remove("hidden");
+    vd.classList.add("hidden");
+    tc.classList.add("active");
+    td.classList.remove("active");
+  }else{
+    vd.classList.remove("hidden");
+    vc.classList.add("hidden");
+    td.classList.add("active");
+    tc.classList.remove("active");
+  }
 }
 
-/* Estimation prix FRET */
-window.estimate = async ()=>{
-  const i = getInputs();
+// Démo locale (juste pour que tu voies l'UX). Supabase arrive juste après.
+function estimateLocal(){
+  const km = parseFloat(document.getElementById("distance").value || "0");
+  const min = parseInt(document.getElementById("duration").value || "0", 10);
+  const vol = document.getElementById("volume").value;
+  const urg = document.getElementById("urgency").value;
 
-  const { data, error } = await supabase.rpc("estimate_fret_price", {
-    p_city: i.city,
-    p_tier: i.tier,
-    p_distance_km: i.distance,
-    p_duration_min: i.duration,
-    p_handling: i.handling,
-    p_stairs: i.stairs,
-    p_fragile: i.fragile
-  });
+  const volMult = {S:1.0, M:1.15, L:1.3, XL:1.55}[vol] || 1.15;
+  const urgAdd  = {URGENT:800, "24H":0, "48H":-200}[urg] ?? 0;
 
-  if (error) {
-    alert("Erreur estimation: " + error.message);
-    return;
-  }
+  const base = 1500;
+  const perKm = 320;
+  const perMin = 60;
+  let price = (base + km*perKm + min*perMin + urgAdd) * volMult;
 
-  lastPrice = data;
-  document.getElementById("price").innerText = data + " F CFA";
-};
+  // plancher
+  const floor = (vol === "XL") ? 6000 : (vol === "L") ? 4500 : (vol === "M") ? 3500 : 3000;
+  price = Math.max(Math.round(price), floor);
 
-/* Création course FRET */
-window.createTrip = async ()=>{
-  const i = getInputs();
-
-  if (!lastPrice) {
-    alert("Estime le prix d’abord.");
-    return;
-  }
-  if (!i.phone) {
-    alert("Mets ton téléphone.");
-    return;
-  }
-  if (!i.pickupZone || !i.dropoffZone) {
-    alert("Mets la zone de départ et d’arrivée.");
-    return;
-  }
-
-  const { data, error } = await supabase.rpc("create_trip", {
-    p_client_phone: i.phone,
-    p_pickup_city: i.city,
-    p_pickup_zone: i.pickupZone,
-    p_pickup_lat: null,
-    p_pickup_lng: null,
-    p_dropoff_city: i.city,
-    p_dropoff_zone: i.dropoffZone,
-    p_dropoff_lat: null,
-    p_dropoff_lng: null,
-    p_distance_km: i.distance,
-    p_duration_min: i.duration,
-    p_service_type: "FRET"
-  });
-
-  if (error) {
-    alert("Erreur création: " + error.message);
-    return;
-  }
-
-  alert("✅ Course FRET créée ! ID: " + data);
-};
+  document.getElementById("price").innerText = price + " F CFA";
+}
 </script>
 
 </body>
