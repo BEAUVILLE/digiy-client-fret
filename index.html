@@ -143,6 +143,10 @@ function estimateLocal(){
   document.getElementById("price").innerText = price + " F CFA";
 }
 </script>
+  // ✅ Ouvre automatiquement Client ou Chauffeur selon l'URL
+const view = new URLSearchParams(location.search).get("view");
+if(view === "driver") showView("driver");
+if(view === "client") showView("client");
 
 </body>
 </html>
