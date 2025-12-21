@@ -6,10 +6,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#16a34a" />
   <meta name="description" content="DIGIY FRET — Colis, bagages, marchandises. Prix juste, chauffeur présent." />
-[ ACCEPTER ]
-[ PROPOSER HEURE ]
-[ PROPOSER DEMAIN ]
-[ PROPOSER PRIX ]
+
+  <!-- CSS UNIQUEMENT ICI -->
+  <style>
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Arial,sans-serif;
+      background:#f7fbf8;
+      color:#0f172a;
+    }
+    header{
+      background:#16a34a;
+      color:#fff;
+      padding:18px;
+      text-align:center;
+      font-weight:900;
+      font-size:18px;
+    }
+    main{
+      max-width:760px;
+      margin:auto;
+      padding:16px;
+    }
+    .card{
+      background:#fff;
+      border-radius:18px;
+      padding:16px;
+      margin-bottom:14px;
+      box-shadow:0 10px 22px rgba(2,6,23,.08);
+    }
+    .actions{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    button{
+      padding:14px;
+      border:none;
+      border-radius:14px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .accept{background:#16a34a;color:#fff}
+    .secondary{background:#e5e7eb}
+  </style>
+</head>
+
+<body>
+
+<header>📦 DIGIY FRET — Chauffeur</header>
+
+<main>
+
+  <div class="card">
+    <strong>📍 Dakar → Plateau</strong><br>
+    📦 Volume : L<br>
+    ⏱️ Urgence : 24H<br>
+    💰 Prix base : 4 500 F CFA
+  </div>
+
+  <!-- BOUTONS CHAUFFEUR (AU BON ENDROIT) -->
+  <div class="actions">
+    <button class="accept">✅ ACCEPTER</button>
+    <button class="secondary">🕒 PROPOSER HEURE</button>
+    <button class="secondary">📅 PROPOSER DEMAIN</button>
+    <button class="secondary">💰 PROPOSER PRIX</button>
+  </div>
+
+</main>
+
+</body>
+</html>
   <style>
     body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:#f7fbf8;color:#0f172a}
     header{background:#16a34a;color:#fff;padding:18px;text-align:center;font-weight:900;font-size:18px}
