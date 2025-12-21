@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>DIGIY FRET — Transport de marchandises</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#16a34a" />
+  <meta name="description" content="DIGIY FRET — Envoi de colis, bagages et marchandises. Prix juste, chauffeur présent." />
+
+  <style>
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Arial,sans-serif;
+      background:#f7fbf8;
+      color:#0f172a;
+    }
+    header{
+      background:#16a34a;
+      color:#fff;
+      padding:18px;
+      text-align:center;
+      font-weight:900;
+      font-size:18px;
+    }
+    main{
+      max-width:720px;
+      margin:auto;
+      padding:16px;
+    }
+    .card{
+      background:#fff;
+      border-radius:18px;
+      box-shadow:0 10px 22px rgba(2,6,23,.08);
+      padding:16px;
+      margin-bottom:14px;
+    }
+    label{
+      font-size:12px;
+      font-weight:800;
+      color:#475569;
+      display:block;
+      margin-bottom:6px;
+    }
+    input, select{
+      width:100%;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(15,23,42,.15);
+      font-size:15px;
+      margin-bottom:14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media(max-width:640px){
+      .grid{grid-template-columns:1fr}
+    }
+    .check{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .price{
+      font-size:26px;
+      font-weight:900;
+      color:#065f46;
+      text-align:center;
+      margin:10px 0;
+    }
+    button{
+      width:100%;
+      padding:16px;
+      border:none;
+      border-radius:16px;
+      background:#16a34a;
+      color:#fff;
+      font-weight:900;
+      font-size:16px;
+      cursor:pointer;
+    }
+    .note{
+      font-size:13px;
+      color:#475569;
+      text-align:center;
+      margin-top:8px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>📦 DIGIY FRET — Transport de marchandises</header>
+
+<main>
+
+  <div class="card">
+    <label>Ville</label>
+    <input id="city" placeholder="Dakar, Saly, Thiès…" />
+
+    <label>Type de chargement</label>
+    <select id="tier">
+      <option value="ENVELOPE">📄 Enveloppe / petit paquet</option>
+      <option value="COLIS" selected>📦 Colis / carton</option>
+      <option value="BAGAGE">🧳 Bagages / plusieurs sacs</option>
+      <option value="GROS">🏗️ Gros volume / marchandises</option>
+    </select>
+
+    <div class="grid">
+      <div>
+        <label>Distance estimée (km)</label>
+        <input id="distance" type="number" step="0.1" value="4" />
+      </div>
+      <div>
+        <label>Durée estimée (min)</label>
+        <input id="duration" type="number" value="12" />
+      </div>
+    </div>
+
+    <div class="check">
+      <input type="checkbox" id="handling" />
+      <label for="handling">Besoin d’aide pour charger / décharger</label>
+    </div>
+
+    <div class="check">
+      <label>Étages à monter (0–5)</label>
+      <input id="stairs" type="number" min="0" max="5" value="0" />
+    </div>
+
+    <div class="check">
+      <input type="checkbox" id="fragile" />
+      <label for="fragile">Marchandise fragile</label>
+    </div>
+
+    <div class="price" id="price">—</div>
+
+    <button onclick="estimate()">Estimer le prix</button>
+  </div>
+
+  <div class="card">
+    <label>Téléphone du client</label>
+    <input id="phone" placeholder="+2217XXXXXXX" />
+
+    <label>Zone de départ</label>
+    <input id="pickupZone" placeholder="Plateau, HLM, Saly Centre…" />
+
+    <label>Zone d’arrivée</label>
+    <input id="dropoffZone" placeholder="Destination…" />
+
+    <button onclick="createTrip()">📦 Commander FRET</button>
+
+    <div class="note">
+      Prix DIGIY garanti • Chauffeur rémunéré dignement
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+/* 🔐 TES CLÉS SUPABASE */
+const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.4Y9n9nOZcYx6bGZ7x3t8k6pJ3hVt9R9V0mYk4hJ7m9A";
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let lastPrice = null;
+
+/* ESTIMATION */
+window.estimate = async ()=>{
+  const city = document.getElementById("city").value;
+  const tier = document.getElementById("tier").value;
+  const distance = parseFloat(document.getElementById("distance").value);
+  const duration = parseInt(document.getElementById("duration").value);
+  const handling = document.getElementById("handling").checked;
+  const stairs = parseInt(document.getElementById("stairs").value);
+  const fragile = document.getElementById("fragile").checked;
+
+  const { data, error } = await supabase.rpc("estimate_fret_price", {
+    p_city: city,
+    p_tier: tier,
+    p_distance_km: distance,
+    p_duration_min: duration,
+    p_handling: handling,
+    p_stairs: stairs,
+    p_fragile: fragile
+  });
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  lastPrice = data;
+  document.getElementById("price").innerText = data + " F CFA";
+};
+
+/* CREATE TRIP */
+window.createTrip = async ()=>{
+  if (!lastPrice) {
+    alert("Estime le prix d’abord");
+    return;
+  }
+
+  const payload = {
+    p_client_phone: document.getElementById("phone").value,
+    p_pickup_city: document.getElementById("city").value,
+    p_pickup_zone: document.getElementById("pickupZone").value,
+    p_pickup_lat: null,
+    p_pickup_lng: null,
+    p_dropoff_city: document.getElementById("city").value,
+    p_dropoff_zone: document.getElementById("dropoffZone").value,
+    p_dropoff_lat: null,
+    p_dropoff_lng: null,
+    p_distance_km: parseFloat(document.getElementById("distance").value),
+    p_duration_min: parseInt(document.getElementById("duration").value),
+    p_service_type: "FRET"
+  };
+
+  const { data, error } = await supabase.rpc("create_trip", payload);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("📦 Course FRET créée !");
+};
+</script>
+
+</body>
+</html>
