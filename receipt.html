@@ -3,139 +3,116 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>DIGIY FRET — Reçu & PIN Livraison</title>
+  <title>DIGIY FRET — Reçu</title>
   <meta name="theme-color" content="#0ea5e9" />
   <style>
     :root{
-      --bg:#ffffff; --card:#ffffff; --line:rgba(2,6,23,.10);
+      --bg:#ffffff; --card:#fff; --line:rgba(2,6,23,.10);
       --text:#0f172a; --muted:#475569;
       --blue:#0ea5e9; --green:#16a34a; --gold:#facc15; --danger:#ef4444;
-      --radius:18px; --shadow:0 14px 30px rgba(2,6,23,.06);
+      --r:18px; --sh:0 14px 30px rgba(2,6,23,.06);
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#fff, #f6fbff);color:var(--text)}
-    header{padding:18px 16px;border-bottom:1px solid var(--line);background:rgba(14,165,233,.08)}
-    .wrap{max-width:780px;margin:0 auto;padding:16px}
-    .brand{display:flex;align-items:center;gap:10px}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:linear-gradient(180deg,#fff,#f6fbff);color:var(--text)}
+    .wrap{max-width:560px;margin:0 auto;padding:16px}
+    .top{display:flex;align-items:center;gap:10px;padding:14px 0}
     .logo{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;font-weight:1000;
       background:linear-gradient(135deg,var(--gold),#f97316);color:#111827;box-shadow:0 12px 26px rgba(250,204,21,.25)}
-    h1{margin:0;font-size:18px;font-weight:1000}
+    h1{margin:0;font-size:18px;font-weight:1100}
     .sub{margin:4px 0 0;color:var(--muted);font-weight:700;font-size:13px}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px;margin-top:14px}
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;font-weight:900;font-size:12px;border:1px solid rgba(2,6,23,.12);background:rgba(255,255,255,.7)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh);padding:14px;margin-top:10px}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;font-weight:1000;font-size:12px;border:1px solid rgba(2,6,23,.12);background:rgba(255,255,255,.7)}
     .ok{color:var(--green)} .bad{color:var(--danger)} .muted{color:var(--muted)}
     .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:640px){.grid2{grid-template-columns:1fr}}
+    @media(max-width:560px){.grid2{grid-template-columns:1fr}}
     .k{font-size:12px;color:var(--muted);font-weight:800}
-    .v{font-size:14px;font-weight:950}
-    .pinbox{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px dashed rgba(2,6,23,.18);
-      border-radius:16px;padding:12px;background:rgba(250,204,21,.08)}
-    .pin{font-size:28px;letter-spacing:.18em;font-weight:1100}
-    button{border:none;border-radius:14px;padding:12px 14px;font-weight:1000;cursor:pointer}
+    .v{font-size:14px;font-weight:1000}
+    .pinbox{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px dashed rgba(2,6,23,.20);
+      border-radius:16px;padding:12px;background:rgba(250,204,21,.10)}
+    .pin{font-size:28px;font-weight:1200;letter-spacing:.18em}
+    button{border:none;border-radius:14px;padding:12px 14px;font-weight:1100;cursor:pointer}
     .primary{background:var(--blue);color:#fff}
     .ghost{background:transparent;border:1px solid rgba(2,6,23,.18);color:var(--text)}
-    .sep{height:1px;background:rgba(2,6,23,.10);margin:12px 0}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
   </style>
 </head>
 <body>
-
-<header>
   <div class="wrap">
-    <div class="brand">
+    <div class="top">
       <div class="logo">∞</div>
       <div>
-        <h1>DIGIY FRET — Reçu & PIN Livraison</h1>
+        <h1>Reçu DIGIY FRET</h1>
         <div class="sub">Garde ton PIN. Donne-le au chauffeur à la livraison.</div>
       </div>
     </div>
-  </div>
-</header>
 
-<main class="wrap">
+    <div class="card">
+      <div id="line" class="pill muted">⏳ Chargement…</div>
 
-  <div class="card">
-    <div id="line" class="pill muted">⏳ Chargement…</div>
-
-    <div class="sep"></div>
-
-    <div class="grid2">
-      <div>
-        <div class="k">Chauffeur</div>
-        <div class="v" id="driverPhone">—</div>
+      <div style="margin-top:12px" class="grid2">
+        <div>
+          <div class="k">Statut</div>
+          <div class="v" id="status">—</div>
+        </div>
+        <div>
+          <div class="k">Chauffeur</div>
+          <div class="v" id="driver">—</div>
+        </div>
       </div>
-      <div>
-        <div class="k">Statut</div>
-        <div class="v" id="status">—</div>
-      </div>
-      <div>
-        <div class="k">Départ</div>
-        <div class="v" id="from">—</div>
-      </div>
-      <div>
-        <div class="k">Arrivée</div>
-        <div class="v" id="to">—</div>
-      </div>
-    </div>
 
-    <div class="sep"></div>
-
-    <div class="pinbox">
-      <div>
-        <div class="k">PIN livraison</div>
-        <div class="pin" id="pinView">••••</div>
+      <div style="margin-top:12px" class="pinbox">
+        <div>
+          <div class="k">PIN livraison</div>
+          <div class="pin" id="pin">••••</div>
+        </div>
+        <button class="ghost" id="copy">Copier</button>
       </div>
-      <button class="ghost" id="btnCopy">Copier</button>
-    </div>
 
-    <div class="sep"></div>
-
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="primary" id="btnCall">Appeler le chauffeur</button>
-      <button class="ghost" onclick="location.reload()">Rafraîchir</button>
+      <div class="row">
+        <button class="primary" id="call">Appeler le chauffeur</button>
+        <button class="ghost" onclick="location.reload()">Rafraîchir</button>
+      </div>
     </div>
   </div>
-
-</main>
 
 <script>
-/* 🔐 SUPABASE — DÉJÀ POSÉ */
 const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
 const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.Wm3b1yqR4c7o3a3o4lP0d2m0qYp9b0oQ1yq0y0y0y0y0"; // (ta clé complète ici si différente)
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.Wm3b1yqR4c7o3a3o4lP0d2m0qYp9b0oQ1yq0y0y0y0y0";
 
-const s = document.createElement("script");
-s.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-s.onload = () => boot();
-document.head.appendChild(s);
+const s=document.createElement("script");
+s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+s.onload=boot; document.head.appendChild(s);
 
 function setLine(type, txt){
-  const el = document.getElementById("line");
-  el.className = "pill " + (type==="ok" ? "ok" : type==="bad" ? "bad" : "muted");
-  el.textContent = txt;
+  const el=document.getElementById("line");
+  el.className="pill "+(type==="ok"?"ok":type==="bad"?"bad":"muted");
+  el.textContent=txt;
 }
 
-let supabase, ORDER_ID, driverPhoneCache = null, pinPlainCache = null;
+let supabase, ORDER_ID, driverPhone=null;
 
 function boot(){
-  const url = new URL(location.href);
-  ORDER_ID = url.searchParams.get("id");
+  const url=new URL(location.href);
+  ORDER_ID=url.searchParams.get("id");
   if(!ORDER_ID){ setLine("bad","❌ ID commande manquant (?id=...)"); return; }
 
-  // Token client (si tu as). Sinon lecture publique si RLS permissif.
-  const tok = localStorage.getItem("digiy_fret_client_token");
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, tok ? {
-    global: { headers: { Authorization: "Bearer " + tok } }
-  } : {});
+  supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
 
-  document.getElementById("btnCopy").onclick = async () => {
-    if(!pinPlainCache){ alert("PIN pas dispo."); return; }
-    await navigator.clipboard.writeText(pinPlainCache);
+  // PIN local (terrain)
+  const pin = localStorage.getItem("digiy_fret_pin_"+ORDER_ID);
+  if(pin) document.getElementById("pin").textContent=pin;
+
+  document.getElementById("copy").onclick=async()=>{
+    const p=localStorage.getItem("digiy_fret_pin_"+ORDER_ID);
+    if(!p){ alert("PIN pas dispo."); return; }
+    await navigator.clipboard.writeText(p);
     alert("PIN copié ✅");
   };
 
-  document.getElementById("btnCall").onclick = () => {
-    if(!driverPhoneCache){ alert("Chauffeur non assigné."); return; }
-    location.href = "tel:" + driverPhoneCache;
+  document.getElementById("call").onclick=()=>{
+    if(!driverPhone){ alert("Chauffeur pas encore assigné."); return; }
+    location.href="tel:"+driverPhone;
   };
 
   load();
@@ -143,32 +120,23 @@ function boot(){
 
 async function load(){
   setLine("muted","⏳ Chargement…");
-
   const { data, error } = await supabase
     .from("fret_orders")
-    .select("id, status, driver_phone, pickup_city, pickup_area, drop_city, drop_area, pin_created_at")
+    .select("status, driver_phone")
     .eq("id", ORDER_ID)
     .maybeSingle();
 
-  if(error){ setLine("bad","⛔ " + error.message); return; }
+  if(error){ setLine("bad","⛔ "+error.message); return; }
   if(!data){ setLine("bad","❌ Commande introuvable."); return; }
 
-  driverPhoneCache = data.driver_phone || null;
-
-  document.getElementById("driverPhone").textContent = data.driver_phone || "—";
+  driverPhone = data.driver_phone || null;
   document.getElementById("status").textContent = data.status || "—";
-  document.getElementById("from").textContent = [data.pickup_city, data.pickup_area].filter(Boolean).join(" • ") || "—";
-  document.getElementById("to").textContent = [data.drop_city, data.drop_area].filter(Boolean).join(" • ") || "—";
+  document.getElementById("driver").textContent = data.driver_phone || "—";
 
-  // PIN: ici on l’affiche seulement si tu le fournis au client (ex: via localStorage après commande).
-  // Si tu veux que le client le voie depuis DB, il faut une colonne "delivery_pin_plain" (je déconseille) ou un RPC sécurisé.
-  const storedPin = localStorage.getItem("digiy_fret_pin_" + ORDER_ID); // recommandé: posé lors de la création commande
-  pinPlainCache = storedPin || null;
-  document.getElementById("pinView").textContent = storedPin ? storedPin : "••••";
-
-  if(data.status === "delivered") setLine("ok","✅ Livré. Merci frérot !");
+  if(data.status==="delivered") setLine("ok","✅ Livré confirmé.");
   else setLine("muted","✅ En cours. Donne le PIN au chauffeur à la livraison.");
 }
 </script>
 </body>
 </html>
+
