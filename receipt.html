@@ -1,319 +1,46 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>DIGIY FRET — Reçu Client</title>
-  <meta name="theme-color" content="#0ea5e9" />
-  <meta name="description" content="Reçu client DIGIY FRET — PIN livraison & suivi." />
+create or replace function public.rpc_fret_mark_paid(
+  p_order_id text,
+  p_method text,
+  p_amount_xof integer,
+  p_ref text,
+  p_actor text
+)
+returns json
+language plpgsql
+security definer
+as $$
+declare
+  v_price integer;
+begin
+  select price_xof into v_price
+  from public.fret_orders
+  where id = p_order_id
+  limit 1;
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  if v_price is null then
+    raise exception 'ORDER_NOT_FOUND';
+  end if;
 
-  <style>
-    :root{
-      --bg1:#f7fbff;--bg2:#fff7ed;--card:rgba(255,255,255,.92);
-      --text:#0b1220;--muted:#5b6472;--line:rgba(0,0,0,.10);
-      --sky:#0ea5e9;--gold:#f59e0b;--ok:#16a34a;--bad:#dc2626;
-      --radius:18px;--shadow:0 12px 28px rgba(0,0,0,.10);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;min-height:100vh;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
-      color:var(--text);
-      background:
-        radial-gradient(900px 600px at 20% 10%, rgba(56,189,248,.22), transparent 55%),
-        radial-gradient(900px 600px at 90% 0%, rgba(245,158,11,.18), transparent 55%),
-        linear-gradient(180deg,var(--bg1),var(--bg2));
-      padding:16px;
-    }
-    .wrap{max-width:980px;margin:auto}
-    .topbar{
-      display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
-      background:rgba(255,255,255,.86);border:1px solid var(--line);border-radius:18px;
-      padding:14px;box-shadow:var(--shadow);backdrop-filter: blur(10px);
-      position:sticky;top:10px;z-index:5;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:44px;height:44px;border-radius:14px;
-      background:linear-gradient(135deg,var(--sky),var(--gold));
-      display:flex;align-items:center;justify-content:center;font-weight:900
-    }
-    .muted{color:var(--muted);font-weight:750;font-size:13px}
-    .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-    .btn{
-      padding:10px 12px;border-radius:14px;border:1px solid var(--line);
-      background:#fff;font-weight:900;cursor:pointer
-    }
-    .btn.primary{background:#e0f2fe;border-color:#7dd3fc}
-    .btn.ok{background:#dcfce7;border-color:#bbf7d0}
-    .btn.bad{background:#fff1f2;border-color:#fecdd3;color:#8a1010}
-    .grid{margin-top:14px;display:grid;grid-template-columns:1fr;gap:14px}
-    .card{
-      background:rgba(255,255,255,.86);border:1px solid var(--line);
-      border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter: blur(10px);
-    }
-    .hd{padding:14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .bd{padding:14px}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 12px;border-radius:999px;border:1px solid var(--line);font-weight:900;background:#fff
-    }
-    .dot{width:10px;height:10px;border-radius:50%}
-    .dot.ok{background:var(--ok)} .dot.warn{background:var(--gold)} .dot.bad{background:var(--bad)}
-    .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media(max-width:560px){.kpi{grid-template-columns:1fr}}
-    .box{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
-    .box b{display:block;font-size:12px}
-    .box span{display:block;margin-top:6px;color:var(--muted);font-weight:800}
-    .chip{
-      display:inline-block;padding:6px 10px;border-radius:999px;
-      background:#f1f5f9;font-weight:900;font-size:12px;margin:6px 6px 0 0
-    }
-    .pinbox{
-      margin-top:12px;padding:14px;border-radius:16px;
-      background:#f8fafc;border:2px dashed #0ea5e9;
-      text-align:center;font-weight:950
-    }
-    .pin{
-      font-size:34px;letter-spacing:6px;margin-top:6px
-    }
-    .note{
-      margin-top:10px;padding:10px 12px;border-radius:14px;
-      background:#f8fafc;border:1px dashed rgba(0,0,0,.18);
-      font-size:13px;color:var(--muted);font-weight:750
-    }
-    .hr{height:1px;background:rgba(0,0,0,.08);margin:12px 0}
-  </style>
-</head>
+  if p_amount_xof is null or p_amount_xof <= 0 then
+    raise exception 'BAD_AMOUNT';
+  end if;
 
-<body>
-<div class="wrap">
+  -- update order
+  update public.fret_orders
+  set payment_status = 'paid',
+      payment_method = lower(p_method),
+      paid_amount_xof = p_amount_xof,
+      paid_at = now(),
+      payment_ref = nullif(p_ref,''),
+      updated_at = now()
+  where id = p_order_id;
 
-  <div class="topbar">
-    <div class="brand">
-      <div class="logo">🧾</div>
-      <div>
-        <b>DIGIY FRET — Reçu Client</b><br>
-        <small class="muted" id="subline">0% commission • paiement direct • terrain first</small>
-      </div>
-    </div>
+  -- log
+  insert into public.fret_payment_logs(order_id, actor, method, amount_xof, status, ref, note)
+  values (p_order_id, coalesce(nullif(p_actor,''),'client'), lower(p_method), p_amount_xof, 'paid', nullif(p_ref,''), 'Marked as paid');
 
-    <div class="right">
-      <button class="btn primary" id="btnRefresh">↻ Actualiser</button>
-      <button class="btn" id="btnShare">🔗 Partager</button>
-      <button class="btn ok" id="btnCopyPin">📋 Copier PIN</button>
-      <button class="btn bad" id="btnHome">↩︎ Retour</button>
-    </div>
-  </div>
+  return json_build_object('ok', true, 'price_xof', v_price);
+end;
+$$;
 
-  <div class="grid">
-
-    <div class="card">
-      <div class="hd">
-        <div>
-          <b>📦 Détails mission</b><br>
-          <small class="muted" id="orderTitle">Mission —</small>
-        </div>
-        <div class="pill">
-          <span class="dot" id="dotStatus"></span>
-          <span id="statusLabel">…</span>
-        </div>
-      </div>
-      <div class="bd">
-        <div class="kpi">
-          <div class="box"><b>Départ</b><span id="kpiFrom">—</span></div>
-          <div class="box"><b>Arrivée</b><span id="kpiTo">—</span></div>
-          <div class="box"><b>Prix</b><span id="kpiPrice">—</span></div>
-          <div class="box"><b>Dernière mise à jour</b><span id="kpiUpdated">—</span></div>
-        </div>
-
-        <div class="hr"></div>
-
-        <div>
-          <span class="chip" id="chipCargo">📦 —</span>
-          <span class="chip" id="chipVol">📏 —</span>
-          <span class="chip" id="chipDriver">🚚 Chauffeur: —</span>
-        </div>
-
-        <div class="pinbox">
-          🔐 PIN DE LIVRAISON
-          <div class="pin" id="pinValue">— — — —</div>
-          <div class="muted" style="margin-top:6px">
-            À donner au chauffeur à l’arrivée pour valider la livraison.
-          </div>
-        </div>
-
-        <div class="note" id="note">
-          Chargement…
-        </div>
-
-        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn" id="btnWhatsApp" style="display:none">💬 WhatsApp Chauffeur</button>
-          <button class="btn" id="btnCopyLink">📎 Copier lien reçu</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-</div>
-
-<script>
-/* 🔐 SUPABASE */
-const SUPABASE_URL = "https://wesqmwjjtsefyjnluosj.supabase.co";
-const SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlc3Ftd2pqdHNlZnlqbmx1b3NqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUxNzg4ODIsImV4cCI6MjA4MDc1NDg4Mn0.dZfYOc2iL2_wRYL3zExZFsFSBK6AbMeOid2LrIjcTdA";
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-/* Helpers */
-const $ = (id)=>document.getElementById(id);
-function safeTxt(v){ return (v===undefined||v===null||String(v).trim()==="") ? "Non précisé" : String(v); }
-function money(x){ return Number(x||0).toLocaleString("fr-FR") + " F CFA"; }
-function fmtDate(iso){
-  try{ return new Date(iso).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}); }
-  catch(e){ return "—"; }
-}
-function normalizePhone(p){
-  if(!p) return null;
-  let s = String(p).trim().replace(/[^\d+]/g,"");
-  if (/^\d{11,15}$/.test(s) && !s.startsWith("+")) s = "+" + s;
-  if (/^0\d{8,}$/.test(s)) s = "+221" + s.replace(/^0+/,"");
-  return s;
-}
-function statusUI(st){
-  const v = (st||"").toLowerCase();
-  if(v==="pending"||v==="new") return {label:"EN ATTENTE", dot:"warn"};
-  if(v==="accepted") return {label:"ACCEPTÉE", dot:"warn"};
-  if(v==="started"||v==="onroute") return {label:"EN COURS", dot:"warn"};
-  if(v==="done"||v==="delivered") return {label:"LIVRÉE", dot:"ok"};
-  if(v==="refused"||v==="cancelled") return {label:"ANNULÉE", dot:"bad"};
-  return {label:safeTxt(st).toUpperCase(), dot:"warn"};
-}
-function computeFrom(o){
-  // compat RPC/table
-  const p = safeTxt(o.pickup);
-  if(p!=="Non précisé") return p;
-  const c = safeTxt(o.pickup_city);
-  const a = safeTxt(o.pickup_area);
-  if(c==="Non précisé" && a==="Non précisé") return "Non précisé";
-  if(a==="Non précisé") return c;
-  if(c==="Non précisé") return a;
-  return `${c} • ${a}`;
-}
-function computeTo(o){
-  const d = safeTxt(o.dropoff);
-  if(d!=="Non précisé") return d;
-  const c = safeTxt(o.drop_city);
-  const a = safeTxt(o.drop_area);
-  if(c==="Non précisé" && a==="Non précisé") return "Non précisé";
-  if(a==="Non précisé") return c;
-  if(c==="Non précisé") return a;
-  return `${c} • ${a}`;
-}
-
-/* Read id */
-const params = new URLSearchParams(location.search);
-const orderId = params.get("id") || params.get("order") || params.get("job");
-if(!orderId){
-  $("note").textContent = "ID mission manquant. Ouvre ce reçu avec ?id=FRET-001";
-}
-
-/* UI actions */
-$("btnHome").addEventListener("click", ()=> history.length>1 ? history.back() : location.href="./index.html");
-$("btnCopyLink").addEventListener("click", async ()=>{
-  try{
-    await navigator.clipboard.writeText(location.href);
-    $("note").textContent = "Lien copié ✅";
-  }catch(e){
-    $("note").textContent = "Copie impossible (navigateur) ❗";
-  }
-});
-$("btnShare").addEventListener("click", async ()=>{
-  try{
-    if(navigator.share){
-      await navigator.share({ title: document.title, url: location.href });
-    }else{
-      await navigator.clipboard.writeText(location.href);
-      $("note").textContent = "Lien copié ✅";
-    }
-  }catch(e){}
-});
-
-$("btnCopyPin").addEventListener("click", async ()=>{
-  const v = $("pinValue").textContent.replace(/\s/g,"");
-  if(!/^\d{4}$/.test(v)) return $("note").textContent = "PIN indisponible.";
-  try{
-    await navigator.clipboard.writeText(v);
-    $("note").textContent = "PIN copié ✅";
-  }catch(e){
-    $("note").textContent = "Copie impossible ❗";
-  }
-});
-
-/* Load order from table (recommended) */
-async function loadReceipt(){
-  if(!orderId) return;
-
-  $("note").textContent = "Chargement…";
-
-  // IMPORTANT: adapte le nom de table si besoin
-  const { data, error } = await supabaseClient
-    .from("fret_orders")
-    .select("id,created_at,updated_at,status,price_xof,pickup,dropoff,pickup_city,pickup_area,drop_city,drop_area,cargo,volume,driver_phone,delivery_pin")
-    .eq("id", orderId)
-    .single();
-
-  if(error){
-    console.error(error);
-    $("note").textContent = "Mission introuvable ou accès refusé ❗";
-    $("orderTitle").textContent = "Mission — " + safeTxt(orderId);
-    return;
-  }
-
-  const st = statusUI(data.status);
-  $("orderTitle").textContent = "Mission " + safeTxt(data.id);
-  $("statusLabel").textContent = st.label;
-
-  const dot = $("dotStatus");
-  dot.className = "dot " + st.dot;
-
-  $("kpiFrom").textContent = computeFrom(data);
-  $("kpiTo").textContent = computeTo(data);
-  $("kpiPrice").textContent = money(data.price_xof);
-  $("kpiUpdated").textContent = fmtDate(data.updated_at || data.created_at);
-
-  $("chipCargo").textContent = "📦 " + safeTxt(data.cargo);
-  $("chipVol").textContent = "📏 " + safeTxt(data.volume);
-
-  const dPhone = normalizePhone(data.driver_phone);
-  $("chipDriver").textContent = "🚚 Chauffeur: " + (dPhone || "Non assigné");
-
-  const pin = safeTxt(data.delivery_pin);
-  $("pinValue").textContent = (/^\d{4}$/.test(pin)) ? pin.split("").join(" ") : "— — — —";
-
-  // WhatsApp chauffeur
-  if(dPhone){
-    const wa = dPhone.replace("+",""); // wa format
-    $("btnWhatsApp").style.display = "inline-flex";
-    $("btnWhatsApp").onclick = ()=> window.open(`https://wa.me/${wa}`, "_blank");
-  }else{
-    $("btnWhatsApp").style.display = "none";
-  }
-
-  if(st.label==="LIVRÉE"){
-    $("note").textContent = "Livraison validée ✅ Merci.";
-  }else{
-    $("note").textContent = "Garde ce reçu. Donne le PIN au chauffeur à l’arrivée.";
-  }
-}
-
-/* refresh */
-$("btnRefresh").addEventListener("click", loadReceipt);
-
-/* start */
-loadReceipt();
-</script>
-</body>
-</html>
+grant execute on function public.rpc_fret_mark_paid(text,text,integer,text,text) to anon, authenticated;
